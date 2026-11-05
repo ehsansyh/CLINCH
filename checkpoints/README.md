@@ -9,9 +9,9 @@ checkpoints/
 │   ├── model_params.json
 │   ├── model_0/best_model.pt
 │   ├── model_1/best_model.pt
-│   ├── model_2/best_model.pt
-│   ├── model_3/best_model.pt
-│   └── model_4/best_model.pt
+│   ├── ...
+│   ├── model_8/best_model.pt
+│   └── model_9/best_model.pt
 └── generator/
     ├── best_model.pt
     └── vocab.json
@@ -21,10 +21,20 @@ checkpoints/
 
 ## Interaction ensemble
 
-Five models, loaded one at a time by `predict_dti.py`. The directory names matter.
-`model_0` through `model_4` is the pattern the loader looks for, and a missing member is
+Ten models, loaded one at a time by `predict_dti.py`. The directory names matter.
+`model_0` through `model_9` is the pattern the loader looks for, and a missing member is
 skipped with a warning rather than treated as an error, so check the printed member count
 if the numbers look off.
+
+This is the deployment ensemble of the paper, trained on all wild-type data and used as
+the reward proxy during reinforcement learning and to score the candidate pool. It is a
+different object from the twenty-five model configuration, five scaffold-grouped folds by
+five seeds, which exists only to measure generalisation. Do not mix the two. A
+twenty-five model directory loaded with `--num_models 10` would quietly take the first
+ten folds' models and report numbers that mean nothing.
+
+Each member holds roughly one million trainable parameters, a few megabytes on disk. The
+protein encoder is frozen and is not stored inside them, which is why they are small.
 
 `model_params.json` is the configuration the ensemble was trained with. The architecture
 is rebuilt from it, so it has to be the file that was saved alongside these weights.

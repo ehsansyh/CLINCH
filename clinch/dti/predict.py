@@ -1,14 +1,20 @@
 # -*- coding: utf-8 -*-
 """Ensemble inference for the CLINCH interaction predictor.
 
-Each member of the ensemble is loaded in turn, run over the whole input, then released,
-which keeps peak memory at one model rather than five. For every ligand and protein pair
-the ensemble returns the median class probability and a spread term.
+The released predictor is the deployment ensemble of the paper, ten models trained on all
+wild-type data. This is the proxy the reinforcement-learning reward queried and the one
+that scored the candidate pool. It is not the same object as the twenty-five model
+cross-validation configuration, which exists to measure generalisation and holds out data
+by design.
 
-The spread is the interquartile range of the positive class probability across members.
-With five models the interquartile range is steadier than the standard deviation, which a
-single outlying member can dominate. This is the same quantity the reinforcement learning
-reward used as its uncertainty discount, so numbers here line up with the training runs.
+Each member is loaded in turn, run over the whole input, then released, so peak memory
+stays at one model rather than ten. For every ligand and protein pair the ensemble returns
+the median class probability and a spread term.
+
+The spread is the interquartile range of the positive class probability across members,
+which is steadier than a standard deviation because one outlying member cannot dominate
+it. This is the same quantity the reward used as its uncertainty discount, so numbers here
+line up with the training runs.
 """
 from __future__ import annotations
 
@@ -36,7 +42,7 @@ TARGET_COLS = {
 
 
 class EnsembleDTIPredictor:
-    def __init__(self, ensemble_dir, params_path, num_models=5, device=None):
+    def __init__(self, ensemble_dir, params_path, num_models=10, device=None):
         self.ensemble_dir = Path(ensemble_dir)
         self.params_path = Path(params_path)
         if not self.ensemble_dir.is_dir():

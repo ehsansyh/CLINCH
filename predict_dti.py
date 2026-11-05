@@ -56,7 +56,8 @@ def main() -> int:
                     help="directory holding model_0/best_model.pt and the rest")
     ap.add_argument("--params", type=Path, default=None,
                     help="model_params.json, defaults to one inside the ensemble dir")
-    ap.add_argument("--num_models", type=int, default=5)
+    ap.add_argument("--num_models", type=int, default=10,
+                    help="members to load, the released deployment ensemble has 10")
     ap.add_argument("--batch_size", type=int, default=16)
     ap.add_argument("--device", default=None, help="cuda, cuda:0 or cpu")
     ap.add_argument("--protein", default=None,

@@ -12,6 +12,8 @@ This repository holds the two things needed to reproduce the predictions in the 
 1. **Interaction prediction.** Score any ligand against the target and get the
    probability that the complex forms at least one hydrogen bond and the probability
    that it forms seven or more hydrophobic contacts, together with an ensemble spread.
+   The released weights are the ten-model deployment ensemble, the same proxy the
+   reward queried during reinforcement learning.
 2. **Molecule generation.** Sample from the reinforcement-learning policy that produced
    the candidate library, and optionally score what comes out with the predictor.
 
@@ -66,10 +68,8 @@ checkpoints/
 ├── dti_ensemble/
 │   ├── model_params.json
 │   ├── model_0/best_model.pt
-│   ├── model_1/best_model.pt
-│   ├── model_2/best_model.pt
-│   ├── model_3/best_model.pt
-│   └── model_4/best_model.pt
+│   ├── ...                     <- ten members, model_0 through model_9
+│   └── model_9/best_model.pt
 └── generator/
     ├── best_model.pt
     └── vocab.json          <- already in the repository
@@ -109,11 +109,19 @@ Output columns
 | `n_models_hbond`, `n_models_hydrophobic` | how many members contributed |
 
 The spread is reported as an interquartile range rather than a standard deviation
-because with five members one outlying model moves the standard deviation a long way.
-This is the same quantity the reinforcement-learning reward used as its uncertainty
-discount, so numbers here line up with the training runs.
+because one outlying member cannot dominate it. This is the same quantity the
+reinforcement-learning reward used as its uncertainty discount, so numbers here line up
+with the training runs.
 
-Members are loaded one at a time and released, so peak memory is one model, not five.
+Members are loaded one at a time and released, so peak memory is one model, not ten.
+
+Two ensemble configurations appear in the paper and they are not interchangeable. The
+twenty-five model configuration, five scaffold-grouped folds by five seeds, exists to
+measure generalisation and reports out-of-fold metrics. The ten-model deployment
+ensemble is trained on all wild-type data, holds out nothing, and is the proxy that
+scored molecules during generation. The weights released here are the deployment
+ensemble, so use the out-of-fold numbers in the paper when you want a generalisation
+estimate, not predictions from these weights on the training ligands.
 
 ---
 
