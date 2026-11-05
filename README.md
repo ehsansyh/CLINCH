@@ -183,4 +183,4 @@ A citation block will be added when the paper has a DOI.
 
 ## Licence
 
-To be added before the repository is made public.
+MIT, see [LICENSE](LICENSE). The weights are released under the same terms.
