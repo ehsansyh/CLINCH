@@ -1,4 +1,6 @@
-# CLINCH
+<p align="center">
+  <img src="assets/clinch_logo.png" alt="CLINCH" width="420">
+</p>
 
 Inference code for **CLINCH**, an interaction-resolved de novo design pipeline for
 HIV-1 protease inhibitors. CLINCH is a word, not an acronym. It refers to the
