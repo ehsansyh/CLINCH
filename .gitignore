@@ -1,0 +1,20 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+
+# model weights are distributed separately, see checkpoints/README.md
+checkpoints/**/*.pt
+checkpoints/**/*.pth
+!checkpoints/generator/vocab.json
+
+# run outputs
+*.csv
+!examples/*.csv
+*.smi
+outputs/
+runs/
+.ipynb_checkpoints/
+.DS_Store

@@ -1,0 +1,8 @@
+name,smiles
+darunavir,CC(C)CN(C[C@@H](O)[C@H](Cc1ccccc1)NC(=O)O[C@H]1CO[C@H]2OCC[C@H]21)S(=O)(=O)c1ccc(N)cc1
+amprenavir,CC(C)CN(C[C@@H](O)[C@H](Cc1ccccc1)NC(=O)O[C@@H]1CCOC1)S(=O)(=O)c1ccc(N)cc1
+tipranavir,CCC[C@@H](CC[C@@H](CC)C1=C(O)[C@@H](CC)CC(=O)O1)c1cccc(NS(=O)(=O)c2ccc(C(F)(F)F)cn2)c1
+nelfinavir,Cc1c(O)cccc1C(=O)N[C@@H](CSc1ccccc1)[C@H](O)CN1C[C@H]2CCCC[C@H]2C[C@H]1C(=O)NC(C)(C)C
+indinavir,CC(C)(C)NC(=O)[C@@H]1CN(Cc2cccnc2)CCN1C[C@@H](O)C[C@@H](Cc1ccccc1)C(=O)N[C@H]1c2ccccc2C[C@H]1O
+lopinavir,Cc1cccc(C)c1OCC(=O)N[C@@H](Cc1ccccc1)[C@H](O)C[C@H](Cc1ccccc1)NC(=O)[C@H](CC(C)C)NC(=O)N(C)Cc1csc(C(C)C)n1
+atazanavir,COC(=O)N[C@H](C(=O)N[C@@H](Cc1ccccc1)[C@@H](O)CN(Cc1ccc(-c2ccccn2)cc1)NC(=O)[C@@H](NC(=O)OC)C(C)(C)C)C(C)(C)C
