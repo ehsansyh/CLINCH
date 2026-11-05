@@ -41,14 +41,41 @@ TARGET_COLS = {
 }
 
 
+PARAM_FILENAMES = ("best_params.json", "model_params.json")
+
+
+def resolve_params(ensemble_dir, params_path=None):
+    """Find the configuration the ensemble was trained with.
+
+    The training pipeline writes it as `best_params.json`, next to the weights.
+    `model_params.json` is accepted too because some older runs used that name.
+    """
+    if params_path is not None:
+        p = Path(params_path)
+        if p.is_dir():
+            for name in PARAM_FILENAMES:
+                if (p / name).is_file():
+                    return p / name
+            raise FileNotFoundError(
+                "no %s in %s" % (" or ".join(PARAM_FILENAMES), p))
+        if not p.is_file():
+            raise FileNotFoundError("no parameter file at %s" % p)
+        return p
+    here = Path(ensemble_dir)
+    for name in PARAM_FILENAMES:
+        if (here / name).is_file():
+            return here / name
+    raise FileNotFoundError(
+        "no %s in %s, pass one with --params"
+        % (" or ".join(PARAM_FILENAMES), here))
+
+
 class EnsembleDTIPredictor:
-    def __init__(self, ensemble_dir, params_path, num_models=10, device=None):
+    def __init__(self, ensemble_dir, params_path=None, num_models=10, device=None):
         self.ensemble_dir = Path(ensemble_dir)
-        self.params_path = Path(params_path)
         if not self.ensemble_dir.is_dir():
             raise FileNotFoundError("no ensemble directory at %s" % self.ensemble_dir)
-        if not self.params_path.is_file():
-            raise FileNotFoundError("no parameter file at %s" % self.params_path)
+        self.params_path = resolve_params(self.ensemble_dir, params_path)
 
         with open(self.params_path, encoding="utf-8") as fh:
             self.cfg = json.load(fh)
@@ -132,7 +159,16 @@ class EnsembleDTIPredictor:
         try:
             model = DTI_Model(self.cfg, self.in_dim, self.n_outputs, self.device,
                               self.cfg["protein_max_len"])
-            model.load_state_dict(torch.load(path, map_location=self.device))
+            try:
+                model.load_state_dict(torch.load(path, map_location=self.device))
+            except RuntimeError as exc:
+                raise RuntimeError(
+                    "member %d did not fit the architecture built from %s.\n"
+                    "The weights and the parameter file have to come from the same "
+                    "training run. More than one best_params.json can exist in a "
+                    "project and they disagree on hidden_size, so check that this one "
+                    "was saved beside these weights.\n\nunderlying error, %s"
+                    % (model_idx, self.params_path, exc)) from None
             model.to(self.device).eval()
 
             dataset = DtiDataset(df, self.target_cols, self.cfg["protein_max_len"],

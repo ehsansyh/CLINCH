@@ -2,6 +2,12 @@
   <img src="assets/clinch_logo.png" alt="CLINCH" width="420">
 </p>
 
+<p align="center">
+  <a href="https://doi.org/10.5281/zenodo.23982077"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.23982077.svg"></a>
+  <a href="LICENSE"><img alt="Licence" src="https://img.shields.io/badge/licence-MIT-blue.svg"></a>
+  <img alt="Python" src="https://img.shields.io/badge/python-3.10%2B-blue.svg">
+</p>
+
 Inference code for **CLINCH**, an interaction-resolved de novo design pipeline for
 HIV-1 protease inhibitors. CLINCH is a word, not an acronym. It refers to the
 harmonic-mean reward, which rewards a molecule only when it secures the hydrogen-bond
@@ -19,6 +25,17 @@ This repository holds the two things needed to reproduce the predictions in the 
 
 Training code, the docking toolkit and the selection stage are not included here. This
 repository is the inference path only.
+
+<p align="center">
+  <img src="assets/clinch_schematic.png" alt="CLINCH pipeline" width="980">
+</p>
+
+<p align="center"><sub>
+The upper row builds and learns the interaction signal. The lower row generates
+molecules from it and checks them. The reward is the only channel between the two, which
+is why the constraints that keep the policy inside the predictor's competence sit on the
+generator side.
+</sub></p>
 
 ---
 
@@ -60,13 +77,15 @@ and painful beyond that, because the protein encoder is a 650M-parameter model.
 
 ## Weights
 
-The weights are not in this repository because of their size. Download them and lay them
-out exactly as below. `checkpoints/README.md` gives the detail.
+The weights are archived on Zenodo under
+[10.5281/zenodo.23982077](https://doi.org/10.5281/zenodo.23982077). They are not in this
+repository because of their size. Download them and lay them out exactly as below.
+`checkpoints/README.md` gives the detail.
 
 ```
 checkpoints/
 ├── dti_ensemble/
-│   ├── model_params.json
+│   ├── best_params.json
 │   ├── model_0/best_model.pt
 │   ├── ...                     <- ten members, model_0 through model_9
 │   └── model_9/best_model.pt
@@ -180,16 +199,30 @@ size reproduce the same draw, but results will not match across different hardwa
   out-of-fold prediction only 1.9% of the actives clear both selection thresholds against
   68.6% of the generated pool. Treat high predicted probabilities on generated molecules
   as a ranking signal, not as a calibrated probability.
-- `model_params.json` must be the file saved with the ensemble you are loading. The
-  architecture is rebuilt from it, so a mismatched config will either fail to load or
-  load silently into the wrong shape.
+- `best_params.json` must be the file saved with the ensemble you are loading. The
+  architecture is rebuilt from it, and configurations from different tuning runs
+  disagree on `hidden_size`, so a mismatched file will not load. The error message
+  names the parameter file it was building from.
 - No wet-lab validation has been carried out on any molecule produced by this code.
 
 ---
 
 ## Citation
 
-A citation block will be added when the paper has a DOI.
+The code and the weights are archived at
+[10.5281/zenodo.23982077](https://doi.org/10.5281/zenodo.23982077).
+
+```bibtex
+@software{sayyah_clinch,
+  author  = {Sayyah, Ehsan and Tunç, Hüseyin and Durdağı, Serdar},
+  title   = {CLINCH, interaction-resolved de novo design for HIV-1 protease},
+  year    = {2026},
+  doi     = {10.5281/zenodo.23982077},
+  url     = {https://github.com/ehsansyh/CLINCH}
+}
+```
+
+A reference to the paper will be added when it has its own DOI.
 
 ## Licence
 

@@ -6,7 +6,7 @@ that the layout matches what the scripts expect.
 ```
 checkpoints/
 ├── dti_ensemble/
-│   ├── model_params.json
+│   ├── best_params.json
 │   ├── model_0/best_model.pt
 │   ├── model_1/best_model.pt
 │   ├── ...
@@ -36,9 +36,10 @@ ten folds' models and report numbers that mean nothing.
 Each member holds roughly one million trainable parameters, a few megabytes on disk. The
 protein encoder is frozen and is not stored inside them, which is why they are small.
 
-`model_params.json` is the configuration the ensemble was trained with. The architecture
+`best_params.json` is the configuration the ensemble was trained with. The architecture
 is rebuilt from it, so it has to be the file that was saved alongside these weights.
-The keys the loader reads are
+The loader looks for `best_params.json` inside the ensemble directory, falls back to
+`model_params.json` for older runs, and `--params` overrides both. The keys it reads are
 
 | key | what it does |
 | --- | --- |
@@ -47,11 +48,18 @@ The keys the loader reads are
 | `interaction_types` | which heads exist, normally `hbond` and `hydrophobic` |
 | `attention_supervision` | whether the dataset emits attention targets |
 
-One caution. A `best_params.json` left over from hyperparameter search is not the same
-file. The search configuration carries the defaults that were explored, not the settings
-the final models were fitted with, and `attention_supervision` in particular reads
-`false` there while supervision was enabled in the deployed models. Use the config that
-was saved with the checkpoints.
+One caution, and it is a real trap. More than one `best_params.json` can exist in a
+project, written by different tuning runs, and they disagree on things that change the
+architecture. Two files seen here differ on `hidden_size`, 256 against 128. Loading
+weights against the wrong one fails, and the raw PyTorch error is not obvious, so the
+loader catches it and says which parameter file it was building from. Always take the
+file that sits with the weights you are loading.
+
+A second note on `attention_supervision`. It reads `false` in the deployment
+configuration, which looks wrong given that attention was supervised during training.
+At inference the flag only controls whether the dataset emits attention target tensors,
+which nothing needs when you are reading predictions, so `false` is correct here and
+says nothing about how the models were fitted.
 
 ## Generator
 

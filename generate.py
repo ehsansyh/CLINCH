@@ -93,10 +93,9 @@ def main() -> int:
 
     if args.score:
         from clinch.dti.predict import EnsembleDTIPredictor
-        params = args.params or (args.ensemble_dir / "model_params.json")
         try:
             predictor = EnsembleDTIPredictor(ensemble_dir=args.ensemble_dir,
-                                             params_path=params, device=device)
+                                             params_path=args.params, device=device)
         except FileNotFoundError as exc:
             print("cannot score, %s" % exc, file=sys.stderr)
             return 1

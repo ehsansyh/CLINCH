@@ -55,7 +55,7 @@ def main() -> int:
                     default=HERE / "checkpoints" / "dti_ensemble",
                     help="directory holding model_0/best_model.pt and the rest")
     ap.add_argument("--params", type=Path, default=None,
-                    help="model_params.json, defaults to one inside the ensemble dir")
+                    help="best_params.json, found inside the ensemble dir by default")
     ap.add_argument("--num_models", type=int, default=10,
                     help="members to load, the released deployment ensemble has 10")
     ap.add_argument("--batch_size", type=int, default=16)
@@ -91,11 +91,10 @@ def main() -> int:
         print("no usable rows in the input", file=sys.stderr)
         return 1
 
-    params = args.params or (args.ensemble_dir / "model_params.json")
     EnsembleDTIPredictor = _load_predictor_class()
     try:
         predictor = EnsembleDTIPredictor(
-            ensemble_dir=args.ensemble_dir, params_path=params,
+            ensemble_dir=args.ensemble_dir, params_path=args.params,
             num_models=args.num_models, device=args.device)
     except FileNotFoundError as exc:
         print("%s\n\nSee checkpoints/README.md for where to put the weights."
